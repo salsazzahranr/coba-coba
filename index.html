@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Tebak Angka - Multi Ronde</title>
+    <style>
+        body { font-family: 'Courier New', Courier, monospace; background: #121212; color: #00ff00; display: flex; justify-content: center; padding: 20px; }
+        .console { background: #000; border: 2px solid #333; padding: 20px; width: 400px; box-shadow: 0 0 20px rgba(0,255,0,0.2); }
+        input { background: #000; border: 1px solid #00ff00; color: #00ff00; padding: 5px; width: 50px; margin-top: 10px; }
+        button { background: #00ff00; border: none; padding: 5px 15px; cursor: pointer; font-weight: bold; }
+        .log { margin-top: 15px; height: 150px; overflow-y: auto; border-top: 1px solid #333; padding-top: 10px; font-size: 14px; }
+        .status { color: yellow; }
+    </style>
+</head>
+<body>
+
+<div class="console">
+    <h3>=== GAME TEBAK ANGKA ===</h3>
+    <p>Tebak angka antara 1-100</p>
+    <p class="status">Ronde: <span id="ronde">1</span>/3 | Nyawa: <span id="nyawa">7</span> | Skor: <span id="skor">0</span></p>
+    
+    <div id="game-input">
+        <input type="number" id="tebakan" min="1" max="100">
+        <button onclick="mainkan()">Tebak!</button>
+    </div>
+
+    <div class="log" id="log"></div>
+    <button onclick="mulaiRonde()" style="margin-top:10px; display:none;" id="btn-ulang">Ronde Berikutnya</button>
+    <button onclick="location.reload()" style="margin-top:10px; display:none;" id="btn-selesai">Main Lagi</button>
+</div>
+
+<script>
+    let ronde = 1;
+    let totalRonde = 3;
+    let angkaTarget = Math.floor(Math.random() * 100) + 1;
+    let nyawa = 7;
+    let skorTotal = 0;
+    let gameAktif = true;
+
+    function mainkan() {
+        if (!gameAktif) return;
+
+        let input = document.getElementById("tebakan");
+        let tebakan = parseInt(input.value);
+        let log = document.getElementById("log");
+        let teksNyawa = document.getElementById("nyawa");
+
+        if (isNaN(tebakan) || tebakan < 1 || tebakan > 100) {
+            log.innerHTML += "> Masukkan angka 1-100!<br>";
+            return;
+        }
+
+        if (tebakan === angkaTarget) {
+            let skorAkhir = nyawa * 100;
+            skorTotal += skorAkhir;
+            log.innerHTML += `<br><span style="color:white">SELAMAT! Angkanya ${angkaTarget}.<br>SKOR Ronde: ${skorAkhir}</span>`;
+            document.getElementById("skor").innerText = skorTotal;
+            selesai();
+        } else {
+            nyawa--;
+            teksNyawa.innerText = nyawa;
+            if (tebakan > angkaTarget) {
+                log.innerHTML += `> ${tebakan}: Terlalu BESAR!<br>`;
+            } else {
+                log.innerHTML += `> ${tebakan}: Terlalu KECIL!<br>`;
+            }
+        }
+
+        if (nyawa <= 0 && tebakan !== angkaTarget) {
+            log.innerHTML += `<br><span style="color:red">GAME OVER Ronde ${ronde}! Angkanya adalah ${angkaTarget}</span>`;
+            selesai();
+        }
+
+        input.value = "";
+        log.scrollTop = log.scrollHeight;
+    }
+
+    function selesai() {
+        gameAktif = false;
+        document.getElementById("game-input").style.display = "none";
+
+        if (ronde < totalRonde) {
+            document.getElementById("btn-ulang").style.display = "block";
+        } else {
+            document.getElementById("log").innerHTML += `<br><span style="color:yellow">Permainan selesai! Skor total: ${skorTotal}</span>`;
+            document.getElementById("btn-selesai").style.display = "block";
+        }
+    }
+
+    function mulaiRonde() {
+        ronde++;
+        angkaTarget = Math.floor(Math.random() * 100) + 1;
+        nyawa = 7;
+        gameAktif = true;
+
+        document.getElementById("ronde").innerText = ronde;
+        document.getElementById("nyawa").innerText = nyawa;
+        document.getElementById("log").innerHTML = "";
+        document.getElementById("game-input").style.display = "block";
+        document.getElementById("btn-ulang").style.display = "none";
+    }
+</script>
+</body>
+</html>
